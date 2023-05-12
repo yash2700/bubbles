@@ -6,15 +6,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <style>
+        *{
+            font-family: 'Courier New', Courier, monospace;
+        }
         canvas{
             display: block;
+            border: 2px solid black;
+            padding: 1rem;
+        }
+        h1{
+            text-align: center;
+        }
+        .container{
+            display: flex;
+            justify-content: center;
+        }
+        button{
+            float: right;
+            margin-right: 25rem;
+            margin-top: 1rem;
+            padding: 0.5rem 0.7rem;
+            background-color: white;
+            color: black;
+            box-shadow: 5px 5px black;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    
-	<canvas id="myCanvas" width="1000" height="1000">
+    <h1>Bubbles App</h1>
+    <div class="container">
+	<canvas id="myCanvas" width="700" height="500">
 </canvas>
+</div>
+    <button type="reset" id="reset">Reset</button>
 
     <script src="./script.js"></script>
 </body>

@@ -12,17 +12,18 @@ const arrow = {
 };
 
 // Store the state of moved circles
-let moved = [];
+var moved = [];
 
 // Draw the circles and arrows
 function drawCirclesAndArrows() {
+    var colors=["red","blue","green","purple"]
   for (let i = 0; i < circleAndArrow.length; i++) {
     const circle = circleAndArrow[i];
 
     // Draw the circle
     context.beginPath();
     context.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-    context.fillStyle = circle.color;
+    context.fillStyle = colors[i];
     context.fill();
     context.closePath();
 
@@ -98,7 +99,6 @@ function animateArrow(circle) {
   
         currentFrame++;
         if(currentFrame>=58){
-            context.fillStyle="gray";
             circle.color="gray"
             cancelAnimationFrame(animationFrame);
          } 
@@ -111,6 +111,9 @@ function animateArrow(circle) {
       }
   
       animate();
+    }
+    else{
+        
     }
   }
   
@@ -155,3 +158,6 @@ function animateArrow(circle) {
   
   drawCirclesAndArrows();
   canvas.addEventListener('click', handleClick);
+  document.getElementById("reset").addEventListener("click",(e)=>{
+location.reload();   
+  })
