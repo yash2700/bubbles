@@ -2,73 +2,106 @@ const canvas = document.getElementById('myCanvas');
 const context = canvas.getContext('2d');
 
 // Define the circle properties
-const circles = [
-  { x: 50, y: 50, radius: 30, color: 'red' },
-  { x: 50, y: 120, radius: 30, color: 'blue' },
-  { x: 50, y: 190, radius: 30, color: 'green' },
-  { x: 50, y: 260, radius: 30, color: 'purple' }
-];
+const circle = { x: 100, y: 100, radius: 50, color: 'red' };
 
-// Draw the circles and arrows on the canvas
-circles.forEach((circle, index) => {
-  // Draw the circle
-  context.beginPath();
-  context.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-  context.fillStyle = circle.color;
-  context.fill();
-  context.closePath();
+// Define the arrow properties
+const arrow = {
+  x0: circle.x + circle.radius+500,
+  y0: circle.y,
+  x1: circle.x + circle.radius + 500,
+  y1: circle.y,
+  width: 8,
+  head_len: 16,
+  head_angle: Math.PI / 6,
+  angle: Math.atan2(circle.y - circle.y, circle.x + circle.radius - circle.x),
+};
 
-  // Draw the arrow
-  draw_arrow(circle.x + circle.radius + 500, circle.y, circle.x + circle.radius + 600, circle.y);
-});
+// Draw the circle
+context.beginPath();
+context.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+context.fillStyle = circle.color;
+context.fill();
+context.closePath();
 
-// Add event listeners to each circle
-canvas.addEventListener('click', function(event) {
-  const mousePos = getMousePos(canvas, event);
-  circles.forEach(circle => {
-    const distFromCenter = Math.sqrt(
-      Math.pow(mousePos.x - circle.x, 2) +
-      Math.pow(mousePos.y - circle.y, 2)
-    );
-    if (distFromCenter <= circle.radius) {
-      console.log(`Clicked on circle with color ${circle.color}`);
-    }
-  });
-});
+// Draw the arrow
+draw_arrow(arrow.x0, arrow.y0, arrow.x1, arrow.y1, arrow.width, arrow.head_len, arrow.head_angle, arrow.angle);
 
- 
-function draw_arrow(x0, y0, x1, y1) {
-    const width = 8;
-    const head_len = 16;
-    const head_angle = Math.PI / 6; // angle of arrowhead
-    const angle = Math.atan2(y1 - y0, x1 - x0);
-    const vertical_angle = Math.atan2(1, 0);
-  
-    context.lineWidth = width;
-  
-    // Adjust the point
-    x0 -= head_len * Math.cos(angle);
-    y0 -= head_len * Math.sin(angle);
-  
-    context.beginPath();
-    context.moveTo(x0, y0);
-    context.lineTo(x1, y1);
-    context.stroke();
-  
-    context.beginPath();
-    context.lineTo(x0, y0);
-    context.lineTo(x0 + head_len * Math.cos(angle - head_angle), y0 + head_len * Math.sin(angle - head_angle)); // rotate head_angle clockwise to make arrow point left
-    context.lineTo(x0 + head_len * Math.cos(angle + head_angle), y0 + head_len * Math.sin(angle + head_angle)); // rotate head_angle clockwise to make arrow point left
-    context.closePath();
-    context.fillStyle = "black";
-    context.stroke();
-    context.fill();
+// Add event listener to canvas
+canvas.addEventListener('click', handleClick);
+
+// Handle click event on circle
+function handleClick(event) {
+  const mouseX = event.clientX - canvas.offsetLeft;
+  const mouseY = event.clientY - canvas.offsetTop;
+
+  // Check if click is inside the circle
+  if (Math.sqrt((mouseX - circle.x) ** 2 + (mouseY - circle.y) ** 2) <= circle.radius) {
+    animateArrow();
   }
-  
-function getMousePos(canvas, event) {
-  const rect = canvas.getBoundingClientRect();
-  return {
-    x: event.clientX - rect.left,
-    y: event.clientY - rect.top
-  };
+}
+
+// Animate arrow moving towards circle
+function animateArrow() {
+  const frames = 60;
+  const distance = 0;
+  const startX = arrow.x0;
+  const endX = circle.x+30 + circle.radius - arrow.head_len;
+  const diffX = endX - startX;
+  const startY = arrow.y0;
+  const endY = circle.y;
+  const diffY = endY - startY;
+
+  let currentFrame = 0;
+
+  function animate() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw circle
+    context.beginPath();
+    context.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+    context.fillStyle = "gray";
+    context.fill();
+    context.closePath();
+
+    // Draw arrow
+    const x = startX + (diffX / frames) * currentFrame;
+    const y = startY + (diffY / frames) * currentFrame;
+    draw_arrow(x, y, x + distance, y, arrow.width, arrow.head_len, arrow.head_angle, arrow.angle);
+
+    currentFrame++;
+
+    if (currentFrame < frames) {
+      requestAnimationFrame(animate);
+    } else {
+    }
+  }
+
+  animate();
+}
+function draw_arrow(x0, y0, x1, y1) {
+  const width = 8;
+  const head_len = 16;
+  const head_angle = Math.PI / 6; // angle of arrowhead
+  const angle = Math.atan2(y1 - y0, x1 - x0);
+  const vertical_angle = Math.atan2(1, 0);
+
+  context.lineWidth = width;
+
+  // Adjust the point
+  x0 -= head_len * Math.cos(angle);
+  y0 -= head_len * Math.sin(angle);
+
+  context.beginPath();
+  context.moveTo(x0+100, y0);
+  context.lineTo(x1, y1);
+  context.stroke();
+
+  context.beginPath();
+  context.lineTo(x0, y0);
+  context.lineTo(x0 + head_len * Math.cos(angle - head_angle), y0 + head_len * Math.sin(angle - head_angle)); // rotate head_angle clockwise to make arrow point left
+  context.lineTo(x0 + head_len * Math.cos(angle + head_angle), y0 + head_len * Math.sin(angle + head_angle)); // rotate head_angle clockwise to make arrow point left
+  context.closePath();
+  context.fillStyle = "black";
+  context.stroke();
+  context.fill();
 }
