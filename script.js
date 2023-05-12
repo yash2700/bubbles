@@ -56,10 +56,17 @@ function animateArrow() {
   function animate() {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
+    console.log(currentFrame);
+
     // Draw circle
     context.beginPath();
     context.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-    context.fillStyle = "gray";
+    if (currentFrame < frames) {
+      context.fillStyle = circle.color;
+    } if(currentFrame>=59){
+        console.log(currentFrame);
+      context.fillStyle = "gray"; // change circle color to gray
+    }
     context.fill();
     context.closePath();
 
@@ -72,12 +79,13 @@ function animateArrow() {
 
     if (currentFrame < frames) {
       requestAnimationFrame(animate);
-    } else {
     }
   }
 
   animate();
 }
+
+
 function draw_arrow(x0, y0, x1, y1) {
   const width = 8;
   const head_len = 16;
